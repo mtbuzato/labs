@@ -1,0 +1,6 @@
+{
+    "files.exclude": {
+        "lab*/**/*.in": true,
+        "lab*/**/*.res": true
+    }
+}
