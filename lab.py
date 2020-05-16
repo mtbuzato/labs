@@ -70,7 +70,7 @@ class LabHelper:
 
             inData = open(dir + test + ".in", "r")
 
-            process = subprocess.run(["python", "{}.py".format(args.lab), "<{}.in".format(test)], capture_output=True, cwd=dir, input=inData.read().encode())
+            process = subprocess.run(["python3", "{}.py".format(args.lab), "<{}.in".format(test)], capture_output=True, cwd=dir, input=inData.read().encode())
 
             if(len(process.stderr) > 0):
                 print()
