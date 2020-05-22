@@ -2,5 +2,6 @@
     "files.exclude": {
         "lab*/**/*.in": true,
         "lab*/**/*.res": true
-    }
+    },
+    "python.pythonPath": "/bin/python3"
 }
