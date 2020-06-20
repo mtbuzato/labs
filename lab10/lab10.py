@@ -44,8 +44,8 @@ def clean(strList):
         list -- Lista limpa
     """
 
-    for i, str in enumerate(strList):               # iterar os itens da lista
-        for ponctuation in pontuacoes:                  # iterar os itens da lista de pontuacão
+    for i, str in enumerate(strList):
+        for ponctuation in pontuacoes:
             str = str.replace(ponctuation, "")              # remover pontuações
         strList[i] = str
 
@@ -62,14 +62,14 @@ def rewrite(strList, dict):
         list -- Lista reescrita
     """    
     
-    for i, str in enumerate(strList):               # iteramos os itens da lista
+    for i, str in enumerate(strList):
         if(str in dict):
             strList[i] = dict[str]                  # substituímos se possui sinônimo
 
     return strList
 
 def represent(strList):
-    """Cria o representador, já ordenado, removendo palavras repetidas
+    """Cria o descritor, já ordenado, removendo palavras repetidas
 
     Arguments:
         strList {list} -- Lista para ser representada
@@ -78,13 +78,13 @@ def represent(strList):
         list -- Lista representada
     """    
 
-    newStrList = []                                     # nova lista
+    strSet = set()
 
-    for str in strList:                                 # iteramos os itens da lista
-        if(not str in newStrList and len(str) > 0):         # adiciona na lista nova ainda não estiver(evita repeticao)
-            newStrList.append(str)
+    for str in strList:
+        if(len(str) > 0):         # adiciona no conjunto nova caso não for vazio
+            strSet.add(str)
 
-    return sorted(newStrList)   # organiza a lista
+    return strSet
 
 # ------------------------------------------------------------
 # BLOCO PRINCIPAL
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     if(not str(input()).startswith("{")):                               # verifica se começamos mesmo com {, caso um input não possua dicionário
         raise ValueError("Esperava-se o início de um dicionário.")
     else:
-        newInput = str(input())                         # lê a próxima linha
+        newInput = str(input())
 
         while(newInput != "}"):                         # enquanto o dict não acabar
             dictInput = newInput.split(":")                 # separamos [palavra]:[sinonimos]
@@ -106,7 +106,7 @@ if __name__ == "__main__":
             for toReplace in dictInput[1].split(","):       # para cada sinonimo
                 dict[toReplace] = dictInput[0]              # colocamos no dict [sinonimo]:[palavra]
 
-            newInput = str(input()) # lê a próxima linha
+            newInput = str(input())
     
     # fazendo dessa maneira, apesar do dict ocupar mais memória, a checagem se torna mais simples
     # utilizando "[palavra] in dict"
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     question = str(input())
     representedQuestion = process(question, dict)                   # processa a questão
 
-    print(f"Descritor pergunta: {','.join(representedQuestion)}")
+    print(f"Descritor pergunta: {','.join(sorted(representedQuestion))}")
 
     answers = []
     representedAnswers = []
@@ -126,23 +126,14 @@ if __name__ == "__main__":
         representedAnswer = process(answer, dict)       # processa a resposta
         representedAnswers.append(representedAnswer)
 
-        print(f"Descritor resposta {i + 1}: {','.join(representedAnswer)}")
+        print(f"Descritor resposta {i + 1}: {','.join(sorted(representedAnswer))}")
 
     print()
     
-    correct = 42                                # o valor padrão é 42 para caso não encontrar outra resposta, essa seja utilizada
+    correct = 42
 
-    for idx, representedAnswer in enumerate(representedAnswers):            # para cada resposta
-        failed = False          # iniciamos com a ideia de que ela é errada
-
-        for questionPart in representedQuestion:            # para cada palavra na pergunta
-            if(not questionPart in representedAnswer):      # verificamos se ela não existe na nossa resposta e se for verdadeiro, essa resposta não nos serve e podemos sair do loop
-                failed = True
-                break
-        
-        if(not failed):             # caso não tenha falhado, essa é a resposta certa
+    for idx, representedAnswer in enumerate(representedAnswers):
+        if(representedAnswer.issuperset(representedQuestion)):          # procura uma resposta que contém a pergunta e define o correto como a pergunta original equivalente
             correct = answers[idx]
     
     print(f"A resposta para a pergunta \"{question}\" é \"{correct}\"")
-
-
