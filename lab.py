@@ -11,14 +11,14 @@ class LabHelper:
         self.ctx = ssl.SSLContext()
 
     def save(self, lab, dir, arq, subdir="/dados"):
-        with urllib.request.urlopen("https://susy.ic.unicamp.br:9999/mc102w/{}-Entrega{}/{}".format(lab, subdir, arq), context=self.ctx) as res:
+        with urllib.request.urlopen("https://susy.ic.unicamp.br:9999/mc102w/{}-AmbienteDeTeste{}/{}".format(lab, subdir, arq), context=self.ctx) as res:
             with open(dir + arq, "wb") as file:
                 file.write(res.read())
                 file.close()
     
     def findName(self, lab):
-        look = "Tarefa {}-Entrega de mc102w &mdash; ".format(lab)
-        with urllib.request.urlopen("https://susy.ic.unicamp.br:9999/mc102w/{}-Entrega/".format(lab), context=self.ctx) as res:
+        look = "Tarefa {}-AmbienteDeTeste de mc102w &mdash; ".format(lab)
+        with urllib.request.urlopen("https://susy.ic.unicamp.br:9999/mc102w/{}-AmbienteDeTeste/".format(lab), context=self.ctx) as res:
             data = res.read().decode()
             indexStart = data.find(look)
             return data[indexStart + len(look):data.find("</H2>", indexStart)]
