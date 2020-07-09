@@ -96,13 +96,13 @@ def findIn(country):
 # Bloco Principal
 
 if __name__ == "__main__":
-    start = str(input())        # leitura do primeiro país
+    start = input()        # leitura do primeiro país
 
-    line = str(input())         # leitura da lista de países
+    line = input()         # leitura da lista de países
     while line != "X":
         lineSplit = line.split(":")
         countries[lineSplit[0]] = lineSplit[1].split(",")
-        line = str(input())
+        line = input()
     
     print(f"Iniciando as buscas em {start}")        # início da busca
     findIn(start)
