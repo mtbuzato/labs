@@ -10,6 +10,58 @@
 
 countries = []
 
+# Classes
+
+class Country:
+
+    def __init__(self, name, population, gdp, longevity, education, income, inequality):
+        """Inicializa uma classe de País
+
+        Args:
+            name (string): Nome do País
+            population (int): População do País
+            gdp (int): PIB do País
+            longevity (int): Expectativa de Vida do país
+            education (int): Nível de Educação do país
+            income (int): Renda per capita do país
+            inequality (int): Nível de desigualdade do país
+        """        
+
+        self.name = name
+        self.population = population
+        self.gdp = gdp
+        self.longevity = longevity
+        self.education = education
+        self.income = income
+        self.inequality = inequality
+        
+        self.hdi = int((inequality * (longevity + education + income)) / 3)     # cálculo do IDH
+    
+    def stringify(self):
+        """Transforma o país em uma string imprimível
+
+        Returns:
+            string: String do país
+        """        
+        
+        return f"{self.name} {self.population} {self.gdp} {self.hdi}"
+    
+    def compareWith(self, other, prop):
+        """Compara atributos de países
+
+        Args:
+            other (Country): País para comparar
+            prop (string): propriedade para comparar
+
+        Returns:
+            bool: verdadeiro se for maior para strings, se for menor para inteiros
+        """
+
+        if prop == "name":
+            return getattr(self, prop) > getattr(other, prop)
+        else:
+            return getattr(self, prop) < getattr(other, prop)
+
 # Funções Globais
 
 def insertCountry():
@@ -19,40 +71,28 @@ def insertCountry():
     amount = int(input())
 
     for _ in range(amount):
-        data = str(input()).split(" ")  # separa os dados por espaço
-        country = {
-            "name": data[0]             # o nome é uma string, então já adicionamos ele
-        }
+        data = input().split(" ")
+        name = data.pop(0)
+        
+        for idx,prop in enumerate(data):
+            if(len(prop) > 0):
+                data[idx] = int(prop)
 
-        for index,prop in enumerate(["population", "gdp", "longevity", "education", "income", "inequality"]):       # todo o resto são ints, então utilizo essa array para mais facilmente criar o objeto que representa o país com as propriedades que ele deve ter
-            country[prop] = int(data[index + 1])
+        country = Country(name, data[0], data[1], data[2], data[3], data[4], data[5])
 
-        # validação de propriedades
-        if country["longevity"] <= 0:
+        if country.longevity <= 0:
             print("Longevidade fora do intervalo")
             exit()
         
-        if country["education"] < 0 or country["education"] > 10:
+        if country.education < 0 or country.education > 10:
             print("Educação fora do intervalo")
             exit()
 
-        if country["inequality"] < 0 or country["inequality"] > 10:
+        if country.inequality < 0 or country.inequality > 10:
             print("Desigualdade fora do intervalo")
             exit()
 
-        # cálculo do IDH
-        country["hdi"] = int((country["inequality"] * (country["longevity"] + country["education"] + country["income"])) / 3)
-
         countries.append(country)
-
-def printCountry(country):
-    """Imprime o país da forma que é necessária segundo o enunciado
-
-    Args:
-        country (dict): Objeto que representa o país que será impresso
-    """    
-    
-    print(f"{country['name']} {country['population']} {country['gdp']} {country['hdi']}")
 
 def listCountries():
     """Lista os países por ordem de cadastro
@@ -61,24 +101,7 @@ def listCountries():
     print("Ordenado por Cadastro")
 
     for country in countries:
-        printCountry(country)
-
-def compare(prop, a, b):
-    """Compara o país a com o b e retorna qual é maior, para o nome(ordem alfabética), e qual é o menor, para números(ordem decrescente)
-
-    Args:
-        prop (string): Propriedade dos objetos que será comparada
-        a (dict): Objeto que será comparado
-        b (dict): Objeto que será comparado com
-
-    Returns:
-        boolean: verdadeiro se a comparação for maior(para nomes) ou menor(para números)
-    """    
-
-    if prop == "name":
-        return a[prop] > b[prop]
-    else:
-        return a[prop] < b[prop]
+        print(country.stringify())
 
 def sortCountries(prop):
     """Utiliza o insertion sort para ordenar uma cópia da lista de países
@@ -95,7 +118,7 @@ def sortCountries(prop):
     for i, aux in enumerate(copy):                      # implementação em python do insertion sort para ordenar, comparando com a nossa função própria pra isso
         j = i
 
-        while j > 0 and compare(prop, copy[j - 1], aux):
+        while j > 0 and copy[j - 1].compareWith(aux, prop):
             copy[j] = copy[j - 1]
             j -= 1
 
@@ -103,41 +126,18 @@ def sortCountries(prop):
 
     return copy
 
-def sortByName():
-    """Imprime a lista de países ordenada por nome
-    """    
+def printSorted(prop, propName):
+    """Imprime os países organizados com base em um parâmetro
 
-    print("Ordenado por Nome")
-
-    for country in sortCountries("name"):
-        printCountry(country)
-
-def sortByPopulation():
-    """Imprime a lista de países ordenada por população
-    """    
-
-    print("Ordenado por População")
-
-    for country in sortCountries("population"):
-        printCountry(country)
-
-def sortByGDP():
-    """Imprime a lista de países ordenada por PIB
-    """    
-
-    print("Ordenado por PIB")
-
-    for country in sortCountries("gdp"):
-        printCountry(country)
-
-def sortByHDI():
-    """Imprime a lista de paíßes ordenada por IDH
+    Args:
+        prop (string): parâmetro para ordenar
+        propName (string): nome do parâmetro em português para imprimir
     """    
     
-    print("Ordenado por IDH")
+    print(f"Ordenado por {propName}")
 
-    for country in sortCountries("hdi"):
-        printCountry(country)
+    for country in sortCountries(prop):
+        print(country.stringify())
 
 # Bloco Principal
 
@@ -146,27 +146,27 @@ if __name__ == "__main__":
     commands = [
         insertCountry,
         listCountries,
-        sortByName,
-        sortByPopulation,
-        sortByGDP,
-        sortByHDI
+        lambda: printSorted("name", "Nome"),
+        lambda: printSorted("population", "População"),
+        lambda: printSorted("gdp", "PIB"),
+        lambda: printSorted("hdi", "IDH")
     ]   # os comandos são indexáveis através dos números equivalentes, de 1 a 6
 
     while running:
         try:
-            cmd = int(input())      # tenta ler o input como um número
+            cmd = int(input())
 
-        except EOFError:            # cuida do caso onde não há mais nada pra ler
+        except EOFError:
             running = False
 
-        except ValueError:          # cuida do caso onde não é o número
+        except ValueError:
             running = True
 
         except:
-            print("Erro desconhecido.") # cuida de casos extremos
+            print("Erro desconhecido.")
 
         else:
-            if(cmd < 1 or cmd > 6):     # cuida do nosso range de comandos
+            if(cmd < 1 or cmd > 6):
                 running = False
             else:
                 commands[cmd - 1]()     # executa o comando equivalente
